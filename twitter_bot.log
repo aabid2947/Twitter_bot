@@ -1,0 +1,277 @@
+2025-03-09 23:47:54,513 - twitter_bot - INFO - Login successful
+2025-03-09 23:47:54,515 - twitter_bot - INFO - Navigating to user profile: JParween74225
+2025-03-09 23:48:03,732 - twitter_bot - INFO - Successfully navigated to JParween74225's profile
+2025-03-09 23:48:06,855 - twitter_bot - INFO - Processing tweet 1 for JParween74225: https://x.com/JParween74225/status/1898800357448495614
+2025-03-09 23:48:11,855 - twitter_bot - INFO - Starting repost process with hashtag
+2025-03-09 23:48:12,273 - twitter_bot - INFO - Found tweet link: https://x.com/JParween74225/status/1898800357448495614
+2025-03-09 23:48:13,603 - twitter_bot - INFO - Navigated to tweet detail page
+2025-03-09 23:48:17,204 - twitter_bot - INFO - Found retweet button with selector: [data-testid="retweet"]
+2025-03-09 23:48:17,750 - twitter_bot - INFO - Clicked retweet button
+2025-03-09 23:48:19,822 - twitter_bot - INFO - Found quote option with selector: //span[text()='Quote']
+2025-03-09 23:48:20,480 - twitter_bot - INFO - Clicked Quote Tweet option
+2025-03-09 23:48:22,679 - twitter_bot - INFO - Found tweet input with selector: [data-testid="tweetTextarea_0"]
+2025-03-09 23:48:22,765 - twitter_bot - INFO - Set tweet input to hashtag(s): #nowayhome
+2025-03-09 23:48:23,840 - twitter_bot - INFO - Found tweet button with selector: [data-testid="tweetButton"]
+2025-03-09 23:48:24,470 - twitter_bot - INFO - Clicked tweet button
+2025-03-09 23:48:29,485 - twitter_bot - INFO - Successfully reposted tweet with hashtag
+2025-03-09 23:48:29,486 - twitter_bot - INFO - Successfully retweeted tweet for JParween74225: 1898800357448495614
+2025-03-09 23:48:37,541 - twitter_bot - INFO - Processing tweet 2 for JParween74225: https://x.com/JParween74225/status/1898800329753518097
+2025-03-09 23:48:42,372 - twitter_bot - INFO - Starting repost process with hashtag
+2025-03-09 23:48:42,499 - twitter_bot - INFO - Found tweet link: https://x.com/JParween74225/status/1898800329753518097
+2025-03-09 23:48:43,904 - twitter_bot - INFO - Navigated to tweet detail page
+2025-03-09 23:48:46,985 - twitter_bot - INFO - Found retweet button with selector: [data-testid="retweet"]
+2025-03-09 23:48:47,340 - twitter_bot - INFO - Clicked retweet button
+2025-03-09 23:48:49,389 - twitter_bot - INFO - Found quote option with selector: //span[text()='Quote']
+2025-03-09 23:48:49,845 - twitter_bot - INFO - Clicked Quote Tweet option
+2025-03-09 23:48:51,898 - twitter_bot - INFO - Found tweet input with selector: [data-testid="tweetTextarea_0"]
+2025-03-09 23:48:51,932 - twitter_bot - INFO - Set tweet input to hashtag(s): #nowayhome
+2025-03-09 23:48:53,033 - twitter_bot - INFO - Found tweet button with selector: [data-testid="tweetButton"]
+2025-03-09 23:48:53,752 - twitter_bot - INFO - Clicked tweet button
+2025-03-09 23:48:58,782 - twitter_bot - INFO - Successfully reposted tweet with hashtag
+2025-03-09 23:48:58,783 - twitter_bot - INFO - Successfully retweeted tweet for JParween74225: 1898800329753518097
+2025-03-09 23:49:05,918 - twitter_bot - INFO - Updated logged tweet id for JParween74225: 1898800357448495614
+2025-03-09 23:49:05,926 - twitter_bot - INFO - Navigating to user profile: DOGEDDSchukonder
+2025-03-09 23:49:15,719 - twitter_bot - INFO - Successfully navigated to DOGEDDSchukonder's profile
+2025-03-09 23:49:39,024 - twitter_bot - ERROR - Error processing user DOGEDDSchukonder: Message: 
+
+2025-03-09 23:49:47,791 - twitter_bot - INFO - Starting monitoring mode...
+2025-03-09 23:51:14,241 - twitter_bot - INFO - Login successful
+2025-03-09 23:51:14,244 - twitter_bot - INFO - Navigating to user profile: JParween74225
+2025-03-09 23:51:22,950 - twitter_bot - INFO - Successfully navigated to JParween74225's profile
+2025-03-09 23:51:29,657 - twitter_bot - INFO - Starting repost process with hashtag
+2025-03-09 23:51:30,604 - twitter_bot - INFO - Found tweet link: https://x.com/JParween74225/status/1898800820814266598
+2025-03-09 23:51:32,101 - twitter_bot - INFO - Navigated to tweet detail page
+2025-03-09 23:51:35,196 - twitter_bot - INFO - Found retweet button with selector: [data-testid="retweet"]
+2025-03-09 23:51:35,556 - twitter_bot - INFO - Clicked retweet button
+2025-03-09 23:51:37,622 - twitter_bot - INFO - Found quote option with selector: //span[text()='Quote']
+2025-03-09 23:51:38,088 - twitter_bot - INFO - Clicked Quote Tweet option
+2025-03-09 23:51:40,143 - twitter_bot - INFO - Found tweet input with selector: [data-testid="tweetTextarea_0"]
+2025-03-09 23:51:40,223 - twitter_bot - INFO - Set tweet input to hashtag(s): #nowayhome
+2025-03-09 23:51:41,325 - twitter_bot - INFO - Found tweet button with selector: [data-testid="tweetButton"]
+2025-03-09 23:51:41,944 - twitter_bot - INFO - Clicked tweet button
+2025-03-09 23:51:46,993 - twitter_bot - INFO - Successfully reposted tweet with hashtag
+2025-03-09 23:51:46,994 - twitter_bot - INFO - new retweet count  0
+2025-03-09 23:51:46,996 - twitter_bot - INFO - Successfully retweeted new tweet for JParween74225: 1898800820814266598 as top ID
+2025-03-09 23:51:51,422 - twitter_bot - INFO - Starting repost process with hashtag
+2025-03-09 23:51:51,560 - twitter_bot - INFO - Found tweet link: https://x.com/JParween74225/status/1898800794922872923
+2025-03-09 23:51:53,311 - twitter_bot - INFO - Navigated to tweet detail page
+2025-03-09 23:51:56,453 - twitter_bot - INFO - Found retweet button with selector: [data-testid="retweet"]
+2025-03-09 23:51:56,830 - twitter_bot - INFO - Clicked retweet button
+2025-03-09 23:51:58,881 - twitter_bot - INFO - Found quote option with selector: //span[text()='Quote']
+2025-03-09 23:51:59,377 - twitter_bot - INFO - Clicked Quote Tweet option
+2025-03-09 23:52:01,431 - twitter_bot - INFO - Found tweet input with selector: [data-testid="tweetTextarea_0"]
+2025-03-09 23:52:01,486 - twitter_bot - INFO - Set tweet input to hashtag(s): #nowayhome
+2025-03-09 23:52:02,573 - twitter_bot - INFO - Found tweet button with selector: [data-testid="tweetButton"]
+2025-03-09 23:52:02,893 - twitter_bot - INFO - Clicked tweet button
+2025-03-09 23:52:07,908 - twitter_bot - INFO - Successfully reposted tweet with hashtag
+2025-03-09 23:52:07,909 - twitter_bot - INFO - new retweet count  0
+2025-03-09 23:52:07,910 - twitter_bot - INFO - Successfully retweeted new tweet for JParween74225: 1898800794922872923 as top ID
+2025-03-09 23:52:07,912 - twitter_bot - INFO - No new tweet for JParween74225: top tweet id 1898800357448495614 already processed
+2025-03-09 23:52:07,916 - twitter_bot - INFO - Monitoring: JParween74225 - No new tweet
+2025-03-09 23:52:07,918 - twitter_bot - INFO - Navigating to user profile: DOGEDDSchukonder
+2025-03-09 23:52:17,012 - twitter_bot - INFO - Successfully navigated to DOGEDDSchukonder's profile
+2025-03-09 23:52:40,079 - twitter_bot - ERROR - Error in check_for_new_tweet for DOGEDDSchukonder: Message: 
+
+2025-03-09 23:52:40,081 - twitter_bot - INFO - Monitoring: DOGEDDSchukonder - Error: Message: 
+
+2025-03-09 23:54:02,899 - twitter_bot - INFO - Login successful
+2025-03-09 23:54:02,900 - twitter_bot - INFO - Navigating to user profile: JParween74225
+2025-03-09 23:54:14,703 - twitter_bot - INFO - Successfully navigated to JParween74225's profile
+2025-03-09 23:54:37,779 - twitter_bot - ERROR - Error in check_for_new_tweet for JParween74225: Message: 
+
+2025-03-09 23:54:37,779 - twitter_bot - INFO - Monitoring: JParween74225 - Error: Message: 
+
+2025-03-09 23:54:37,781 - twitter_bot - INFO - Navigating to user profile: DOGEDDSchukonder
+2025-03-09 23:54:42,784 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aabid\\OneDrive\\Desktop\\Twit_Repost_Bot\\twitter_bot.py', reloading
+2025-03-09 23:54:43,695 - werkzeug - INFO -  * Restarting with stat
+2025-03-09 23:54:48,878 - root - INFO - Chromedriver is already installed.
+2025-03-09 23:54:48,936 - werkzeug - WARNING -  * Debugger is active!
+2025-03-09 23:54:48,961 - werkzeug - INFO -  * Debugger PIN: 442-942-831
+2025-03-09 23:54:49,050 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 23:54:49] "[32mGET /start_bot HTTP/1.1[0m" 302 -
+2025-03-09 23:54:49,108 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 23:54:49] "GET / HTTP/1.1" 200 -
+2025-03-09 23:56:48,421 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aabid\\OneDrive\\Desktop\\Twit_Repost_Bot\\twitter_bot.py', reloading
+2025-03-09 23:56:49,279 - werkzeug - INFO -  * Restarting with stat
+2025-03-09 23:57:07,727 - root - INFO - Chromedriver is already installed.
+2025-03-09 23:57:07,811 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-03-09 23:57:07,812 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-09 23:57:07,828 - werkzeug - INFO -  * Restarting with stat
+2025-03-09 23:57:12,292 - root - INFO - Chromedriver is already installed.
+2025-03-09 23:57:12,364 - werkzeug - WARNING -  * Debugger is active!
+2025-03-09 23:57:12,389 - werkzeug - INFO -  * Debugger PIN: 442-942-831
+2025-03-09 23:57:30,359 - werkzeug - INFO - 127.0.0.1 - - [09/Mar/2025 23:57:30] "[32mPOST /upload HTTP/1.1[0m" 302 -
+2025-03-09 23:58:10,851 - twitter_bot - INFO - Login successful
+2025-03-09 23:58:10,852 - twitter_bot - INFO - Navigating to user profile: JParween74225
+2025-03-09 23:58:20,289 - twitter_bot - INFO - Successfully navigated to JParween74225's profile
+2025-03-09 23:58:23,428 - twitter_bot - INFO - Processing tweet 1 for JParween74225: https://x.com/JParween74225/status/1898802918217973885
+2025-03-09 23:58:28,333 - twitter_bot - INFO - Starting repost process with hashtag
+2025-03-09 23:58:28,483 - twitter_bot - INFO - Found tweet link: https://x.com/JParween74225/status/1898802918217973885
+2025-03-09 23:58:29,833 - twitter_bot - INFO - Navigated to tweet detail page
+2025-03-09 23:58:32,962 - twitter_bot - INFO - Found retweet button with selector: [data-testid="retweet"]
+2025-03-09 23:58:33,673 - twitter_bot - INFO - Clicked retweet button
+2025-03-09 23:58:35,740 - twitter_bot - INFO - Found quote option with selector: //span[text()='Quote']
+2025-03-09 23:58:37,404 - twitter_bot - INFO - Clicked Quote Tweet option
+2025-03-09 23:58:39,456 - twitter_bot - INFO - Found tweet input with selector: [data-testid="tweetTextarea_0"]
+2025-03-09 23:58:39,572 - twitter_bot - INFO - Set tweet input to hashtag(s): #nowayhome
+2025-03-09 23:58:40,651 - twitter_bot - INFO - Found tweet button with selector: [data-testid="tweetButton"]
+2025-03-09 23:58:41,621 - twitter_bot - INFO - Clicked tweet button
+2025-03-09 23:58:46,623 - twitter_bot - INFO - Successfully reposted tweet with hashtag
+2025-03-09 23:58:46,624 - twitter_bot - INFO - Successfully retweeted tweet for JParween74225: 1898802918217973885
+2025-03-09 23:58:54,189 - twitter_bot - INFO - Processing tweet 2 for JParween74225: https://x.com/JParween74225/status/1898802891428950422
+2025-03-09 23:59:02,449 - twitter_bot - INFO - Starting repost process with hashtag
+2025-03-09 23:59:03,634 - twitter_bot - INFO - Found tweet link: https://x.com/JParween74225/status/1898802891428950422
+2025-03-09 23:59:06,137 - twitter_bot - INFO - Navigated to tweet detail page
+2025-03-09 23:59:09,738 - twitter_bot - INFO - Found retweet button with selector: [data-testid="retweet"]
+2025-03-09 23:59:10,873 - twitter_bot - INFO - Clicked retweet button
+2025-03-09 23:59:12,967 - twitter_bot - INFO - Found quote option with selector: //span[text()='Quote']
+2025-03-09 23:59:13,857 - twitter_bot - INFO - Clicked Quote Tweet option
+2025-03-09 23:59:15,908 - twitter_bot - INFO - Found tweet input with selector: [data-testid="tweetTextarea_0"]
+2025-03-09 23:59:15,985 - twitter_bot - INFO - Set tweet input to hashtag(s): #nowayhome
+2025-03-09 23:59:17,082 - twitter_bot - INFO - Found tweet button with selector: [data-testid="tweetButton"]
+2025-03-09 23:59:17,771 - twitter_bot - INFO - Clicked tweet button
+2025-03-09 23:59:22,773 - twitter_bot - INFO - Successfully reposted tweet with hashtag
+2025-03-09 23:59:22,781 - twitter_bot - INFO - Successfully retweeted tweet for JParween74225: 1898802891428950422
+2025-03-09 23:59:30,031 - twitter_bot - INFO - Updated logged tweet id for JParween74225: 1898802918217973885
+2025-03-09 23:59:30,043 - twitter_bot - INFO - Navigating to user profile: DOGEDDSchukonder
+2025-03-09 23:59:39,917 - twitter_bot - INFO - Successfully navigated to DOGEDDSchukonder's profile
+2025-03-10 00:00:04,019 - twitter_bot - ERROR - Error processing user DOGEDDSchukonder: Message: 
+
+2025-03-10 00:00:13,770 - twitter_bot - INFO - Starting monitoring mode...
+2025-03-10 00:01:40,775 - twitter_bot - INFO - Login successful
+2025-03-10 00:01:40,776 - twitter_bot - INFO - Navigating to user profile: JParween74225
+2025-03-10 00:01:49,795 - twitter_bot - INFO - Successfully navigated to JParween74225's profile
+2025-03-10 00:01:56,338 - twitter_bot - INFO - Starting repost process with hashtag
+2025-03-10 00:01:56,475 - twitter_bot - INFO - Found tweet link: https://x.com/JParween74225/status/1898803815505387996
+2025-03-10 00:01:57,062 - twitter_bot - INFO - Navigated to tweet detail page
+2025-03-10 00:02:00,237 - twitter_bot - INFO - Found retweet button with selector: [data-testid="retweet"]
+2025-03-10 00:02:00,552 - twitter_bot - INFO - Clicked retweet button
+2025-03-10 00:02:02,616 - twitter_bot - INFO - Found quote option with selector: //span[text()='Quote']
+2025-03-10 00:02:03,057 - twitter_bot - INFO - Clicked Quote Tweet option
+2025-03-10 00:02:05,110 - twitter_bot - INFO - Found tweet input with selector: [data-testid="tweetTextarea_0"]
+2025-03-10 00:02:05,189 - twitter_bot - INFO - Set tweet input to hashtag(s): #nowayhome
+2025-03-10 00:02:06,257 - twitter_bot - INFO - Found tweet button with selector: [data-testid="tweetButton"]
+2025-03-10 00:02:06,892 - twitter_bot - INFO - Clicked tweet button
+2025-03-10 00:02:11,978 - twitter_bot - INFO - Successfully reposted tweet with hashtag
+2025-03-10 00:02:12,008 - twitter_bot - INFO - new retweet count  0
+2025-03-10 00:02:12,141 - twitter_bot - INFO - Successfully retweeted new tweet for JParween74225: 1898803815505387996 as top ID
+2025-03-10 00:02:17,904 - twitter_bot - INFO - Starting repost process with hashtag
+2025-03-10 00:02:18,202 - twitter_bot - INFO - Found tweet link: https://x.com/JParween74225/status/1898803790742196327
+2025-03-10 00:02:19,706 - twitter_bot - INFO - Navigated to tweet detail page
+2025-03-10 00:02:22,928 - twitter_bot - INFO - Found retweet button with selector: [data-testid="retweet"]
+2025-03-10 00:02:23,286 - twitter_bot - INFO - Clicked retweet button
+2025-03-10 00:02:25,318 - twitter_bot - INFO - Found quote option with selector: //span[text()='Quote']
+2025-03-10 00:02:26,745 - twitter_bot - INFO - Clicked Quote Tweet option
+2025-03-10 00:02:28,784 - twitter_bot - INFO - Found tweet input with selector: [data-testid="tweetTextarea_0"]
+2025-03-10 00:02:28,939 - twitter_bot - INFO - Set tweet input to hashtag(s): #nowayhome
+2025-03-10 00:02:30,002 - twitter_bot - INFO - Found tweet button with selector: [data-testid="tweetButton"]
+2025-03-10 00:02:31,221 - twitter_bot - INFO - Clicked tweet button
+2025-03-10 00:02:36,227 - twitter_bot - INFO - Successfully reposted tweet with hashtag
+2025-03-10 00:02:36,229 - twitter_bot - INFO - new retweet count  1
+2025-03-10 00:02:36,230 - twitter_bot - INFO - Successfully retweeted new tweet for JParween74225: 1898803790742196327
+2025-03-10 00:02:36,242 - twitter_bot - INFO - No new tweet for JParween74225: top tweet id 1898802918217973885 already processed
+2025-03-10 00:02:36,246 - twitter_bot - INFO - tweet  id updated JParween74225
+2025-03-10 00:02:36,255 - twitter_bot - INFO - Updated logged tweet id for JParween74225: 1898803815505387996
+2025-03-10 00:02:36,259 - twitter_bot - INFO - Monitoring: JParween74225 - Retweeted 0 new tweet(s) for JParween74225.
+2025-03-10 00:02:36,272 - twitter_bot - INFO - Navigating to user profile: DOGEDDSchukonder
+2025-03-10 00:02:46,090 - twitter_bot - INFO - Successfully navigated to DOGEDDSchukonder's profile
+2025-03-10 00:03:09,405 - twitter_bot - ERROR - Error in check_for_new_tweet for DOGEDDSchukonder: Message: 
+
+2025-03-10 00:03:09,406 - twitter_bot - INFO - Monitoring: DOGEDDSchukonder - Error: Message: 
+
+2025-03-10 00:04:44,685 - twitter_bot - INFO - Login successful
+2025-03-10 00:04:44,685 - twitter_bot - INFO - Navigating to user profile: JParween74225
+2025-03-10 00:04:52,314 - twitter_bot - INFO - Successfully navigated to JParween74225's profile
+2025-03-10 00:04:55,757 - twitter_bot - INFO - No new tweet for JParween74225: top tweet id 1898803815505387996 already processed
+2025-03-10 00:04:55,757 - twitter_bot - INFO - Monitoring: JParween74225 - No new tweets to retweet for JParween74225.
+2025-03-10 00:04:55,758 - twitter_bot - INFO - Navigating to user profile: DOGEDDSchukonder
+2025-03-10 00:05:02,281 - twitter_bot - INFO - Successfully navigated to DOGEDDSchukonder's profile
+2025-03-10 00:05:25,804 - twitter_bot - ERROR - Error in check_for_new_tweet for DOGEDDSchukonder: Message: 
+
+2025-03-10 00:05:25,818 - twitter_bot - INFO - Monitoring: DOGEDDSchukonder - Error: Message: 
+
+2025-03-10 00:07:02,298 - twitter_bot - INFO - Login successful
+2025-03-10 00:07:02,313 - twitter_bot - INFO - Navigating to user profile: JParween74225
+2025-03-10 00:07:11,250 - twitter_bot - INFO - Successfully navigated to JParween74225's profile
+2025-03-10 00:07:17,498 - twitter_bot - INFO - Starting repost process with hashtag
+2025-03-10 00:07:17,811 - twitter_bot - INFO - Found tweet link: https://x.com/JParween74225/status/1898804818514440433
+2025-03-10 00:07:18,658 - twitter_bot - INFO - Navigated to tweet detail page
+2025-03-10 00:07:21,699 - twitter_bot - INFO - Found retweet button with selector: [data-testid="retweet"]
+2025-03-10 00:07:22,009 - twitter_bot - INFO - Clicked retweet button
+2025-03-10 00:07:24,064 - twitter_bot - INFO - Found quote option with selector: //span[text()='Quote']
+2025-03-10 00:07:24,415 - twitter_bot - INFO - Clicked Quote Tweet option
+2025-03-10 00:07:26,465 - twitter_bot - INFO - Found tweet input with selector: [data-testid="tweetTextarea_0"]
+2025-03-10 00:07:26,515 - twitter_bot - INFO - Set tweet input to hashtag(s): #nowayhome
+2025-03-10 00:07:27,613 - twitter_bot - INFO - Found tweet button with selector: [data-testid="tweetButton"]
+2025-03-10 00:07:28,264 - twitter_bot - INFO - Clicked tweet button
+2025-03-10 00:07:33,265 - twitter_bot - INFO - Successfully reposted tweet with hashtag
+2025-03-10 00:07:33,288 - twitter_bot - INFO - new retweet count  0
+2025-03-10 00:07:33,289 - twitter_bot - INFO - Successfully retweeted new tweet for JParween74225: 1898804818514440433 as top ID
+2025-03-10 00:07:33,290 - twitter_bot - INFO - No new tweet for JParween74225: top tweet id 1898803815505387996 already processed
+2025-03-10 00:07:33,296 - twitter_bot - INFO - tweet  id updated JParween74225
+2025-03-10 00:07:33,312 - twitter_bot - INFO - Updated logged tweet id for JParween74225: 1898804818514440433
+2025-03-10 00:07:33,315 - twitter_bot - INFO - Monitoring: JParween74225 - Retweeted 0 new tweet(s) for JParween74225.
+2025-03-10 00:07:33,325 - twitter_bot - INFO - Navigating to user profile: DOGEDDSchukonder
+2025-03-10 00:07:41,545 - twitter_bot - INFO - Successfully navigated to DOGEDDSchukonder's profile
+2025-03-10 00:08:04,946 - twitter_bot - ERROR - Error in check_for_new_tweet for DOGEDDSchukonder: Message: 
+
+2025-03-10 00:08:04,947 - twitter_bot - INFO - Monitoring: DOGEDDSchukonder - Error: Message: 
+
+2025-03-10 00:09:40,077 - twitter_bot - INFO - Login successful
+2025-03-10 00:09:40,083 - twitter_bot - INFO - Navigating to user profile: JParween74225
+2025-03-10 00:09:47,612 - twitter_bot - INFO - Successfully navigated to JParween74225's profile
+2025-03-10 00:09:50,967 - twitter_bot - INFO - No new tweet for JParween74225: top tweet id 1898804818514440433 already processed
+2025-03-10 00:09:50,968 - twitter_bot - INFO - Monitoring: JParween74225 - No new tweets to retweet for JParween74225.
+2025-03-10 00:09:50,972 - twitter_bot - INFO - Navigating to user profile: DOGEDDSchukonder
+2025-03-10 00:09:58,247 - twitter_bot - INFO - Successfully navigated to DOGEDDSchukonder's profile
+2025-03-10 00:10:01,265 - twitter_bot - ERROR - Error in check_for_new_tweet for DOGEDDSchukonder: Message: invalid session id: session deleted as the browser has closed the connection
+from disconnected: not connected to DevTools
+  (Session info: chrome=134.0.6998.36)
+Stacktrace:
+	GetHandleVerifier [0x0069CED3+25523]
+	(No symbol) [0x006223B4]
+	(No symbol) [0x004F06E3]
+	(No symbol) [0x004DFEC0]
+	(No symbol) [0x004FDFDF]
+	(No symbol) [0x005646EF]
+	(No symbol) [0x0057EB89]
+	(No symbol) [0x0055D5F6]
+	(No symbol) [0x0052C55F]
+	(No symbol) [0x0052D8A4]
+	GetHandleVerifier [0x009A2713+3193843]
+	GetHandleVerifier [0x009B69E9+3276489]
+	GetHandleVerifier [0x009B0F0C+3253228]
+	GetHandleVerifier [0x0073B0C0+673184]
+	(No symbol) [0x0062B43D]
+	(No symbol) [0x00628568]
+	(No symbol) [0x00628709]
+	(No symbol) [0x0061AE90]
+	BaseThreadInitThunk [0x765A5D49+25]
+	RtlInitializeExceptionChain [0x774DCDEB+107]
+	RtlGetAppContainerNamedObjectPath [0x774DCD71+561]
+
+2025-03-10 00:10:01,285 - twitter_bot - INFO - Monitoring: DOGEDDSchukonder - Error: Message: invalid session id: session deleted as the browser has closed the connection
+from disconnected: not connected to DevTools
+  (Session info: chrome=134.0.6998.36)
+Stacktrace:
+	GetHandleVerifier [0x0069CED3+25523]
+	(No symbol) [0x006223B4]
+	(No symbol) [0x004F06E3]
+	(No symbol) [0x004DFEC0]
+	(No symbol) [0x004FDFDF]
+	(No symbol) [0x005646EF]
+	(No symbol) [0x0057EB89]
+	(No symbol) [0x0055D5F6]
+	(No symbol) [0x0052C55F]
+	(No symbol) [0x0052D8A4]
+	GetHandleVerifier [0x009A2713+3193843]
+	GetHandleVerifier [0x009B69E9+3276489]
+	GetHandleVerifier [0x009B0F0C+3253228]
+	GetHandleVerifier [0x0073B0C0+673184]
+	(No symbol) [0x0062B43D]
+	(No symbol) [0x00628568]
+	(No symbol) [0x00628709]
+	(No symbol) [0x0061AE90]
+	BaseThreadInitThunk [0x765A5D49+25]
+	RtlInitializeExceptionChain [0x774DCDEB+107]
+	RtlGetAppContainerNamedObjectPath [0x774DCD71+561]
+

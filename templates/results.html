@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Twitter Repost Results</title>
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <header class="mb-8">
+            <h1 class="text-3xl font-bold text-center text-blue-600">Twitter Repost Results</h1>
+            <p class="text-center text-gray-600 mt-2">Summary of reposting operations</p>
+        </header>
+
+        <!-- Monitoring Status -->
+        {% if monitoring_active %}
+        <div class="mb-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+            <strong class="font-bold">Monitoring Active!</strong>
+            <span class="block sm:inline"> The bot is currently running in the background, monitoring for new tweets.</span>
+            <a href="{{ url_for('stop_monitoring') }}" class="mt-2 inline-block bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-4 rounded">
+                Stop Monitoring
+            </a>
+            <a href="{{ url_for('status_page') }}" class="mt-2 ml-2 inline-block bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-4 rounded">
+                View Status
+            </a>
+        </div>
+        {% endif %}
+
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-xl font-semibold mb-4">Reposting Summary</h2>
+            
+            {% if results %}
+                <div class="mb-4">
+                    <p class="text-gray-700">
+                        <span class="font-medium">Total operations:</span> {{ results|length }}
+                    </p>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Status
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    User
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Message
+                                </th>
+                                {% if monitoring_active %}
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Timestamp
+                                </th>
+                                {% endif %}
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            {% for result in results %}
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    {% if result.status == 'success' %}
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                        Success
+                                    </span>
+                                    {% elif result.status == 'warning' %}
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                        Warning
+                                    </span>
+                                    {% else %}
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                        Error
+                                    </span>
+                                    {% endif %}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {{ result.user if result.user else 'N/A' }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {{ result.message }}
+                                </td>
+                                {% if monitoring_active %}
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {{ result.timestamp if result.timestamp else 'N/A' }}
+                                </td>
+                                {% endif %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-gray-500">No results to display.</p>
+            {% endif %}
+
+            <div class="mt-6 flex space-x-4">
+                <a href="{{ url_for('index') }}" 
+                   class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    Back to Home
+                </a>
+                
+                {% if monitoring_active %}
+                <a href="{{ url_for('stop_monitoring') }}" 
+                   class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                    Stop Monitoring
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if monitoring_active %}
+        <div class="mt-6 bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-xl font-semibold mb-4">Monitoring Information</h2>
+            
+            <div class="mb-4">
+                <p class="text-gray-700">
+                    The bot is actively monitoring the specified Twitter accounts for new tweets. It will automatically repost new tweets as they appear.
+                </p>
+            </div>
+            
+            <div class="mb-4">
+                <h3 class="text-lg font-medium text-gray-900 mb-2">What happens now?</h3>
+                <ul class="list-disc pl-5 text-gray-700 space-y-1">
+                    <li>You can close this page and the bot will continue running on the server</li>
+                    <li>Return to the home page at any time to check the monitoring status</li>
+                    <li>New results will be logged and can be viewed on the status page</li>
+                    <li>To stop monitoring, use the "Stop Monitoring" button</li>
+                </ul>
+            </div>
+        </div>
+        {% endif %}
+
+        <footer class="mt-8 text-center text-gray-500 text-sm">
+            <p>Twitter Repost Bot &copy; 2023 - For educational purposes only</p>
+            <p class="mt-1">Please ensure you comply with Twitter's Terms of Service</p>
+        </footer>
+    </div>
+</body>
+</html> 

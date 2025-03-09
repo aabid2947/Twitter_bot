@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Twitter Repost Bot</title>
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <header class="mb-8">
+            <h1 class="text-3xl font-bold text-center text-blue-600">Twitter Repost Bot</h1>
+            <p class="text-center text-gray-600 mt-2">Automatically repost tweets from targeted users with custom hashtags</p>
+        </header>
+
+        <!-- Monitoring Status -->
+        {% if monitoring_active %}
+        <div class="mb-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+            <strong class="font-bold">Monitoring Active!</strong>
+            <span class="block sm:inline"> The bot is currently running in the background, monitoring for new tweets.</span>
+            <a href="{{ url_for('stop_monitoring') }}" class="mt-2 inline-block bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-4 rounded">
+                Stop Monitoring
+            </a>
+            <a href="{{ url_for('status_page') }}" class="mt-2 ml-2 inline-block bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-4 rounded">
+                View Status
+            </a>
+        </div>
+        {% endif %}
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="mb-6">
+            {% for message in messages %}
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-2" role="alert">
+                <span class="block sm:inline">{{ message }}</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <form action="{{ url_for('upload_file') }}" method="post" enctype="multipart/form-data" class="space-y-6">
+                <div>
+                    <label for="file" class="block text-sm font-medium text-gray-700 mb-1">Upload User IDs File (TXT)</label>
+                    <p class="text-xs text-gray-500 mb-2">File should contain one Twitter user ID per line</p>
+                    <input type="file" name="file" id="file" required
+                        class="block w-full text-sm text-gray-500
+                        file:mr-4 file:py-2 file:px-4
+                        file:rounded-md file:border-0
+                        file:text-sm file:font-semibold
+                        file:bg-blue-50 file:text-blue-700
+                        hover:file:bg-blue-100">
+                </div>
+
+                <div>
+                    <label for="twitter_username" class="block text-sm font-medium text-gray-700 mb-1">Twitter Username</label>
+                    <input type="text" name="twitter_username" id="twitter_username" required
+                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                </div>
+
+                <div>
+                    <label for="twitter_password" class="block text-sm font-medium text-gray-700 mb-1">Twitter Password</label>
+                    <input type="password" name="twitter_password" id="twitter_password" required
+                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                </div>
+
+                <div>
+                    <label for="hashtags" class="block text-sm font-medium text-gray-700 mb-1">Hashtags to Add</label>
+                    <p class="text-xs text-gray-500 mb-2">Separate multiple hashtags with commas (e.g., #tech, #news)</p>
+                    <input type="text" name="hashtags" id="hashtags" required
+                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                </div>
+
+                <!-- Monitoring Options -->
+                <div class="border-t border-gray-200 pt-4">
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">Monitoring Options</h3>
+                    
+                    <div class="flex items-start mb-4">
+                        <div class="flex items-center h-5">
+                            <input id="enable_monitoring" name="enable_monitoring" type="checkbox" 
+                                class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded">
+                        </div>
+                        <div class="ml-3 text-sm">
+                            <label for="enable_monitoring" class="font-medium text-gray-700">Enable Continuous Monitoring</label>
+                            <p class="text-gray-500">Bot will keep running in the background and check for new tweets periodically</p>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label for="monitor_interval" class="block text-sm font-medium text-gray-700 mb-1">Check Interval (seconds)</label>
+                        <input type="number" name="monitor_interval" id="monitor_interval" value="300" min="60" max="3600"
+                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                        <p class="text-xs text-gray-500 mt-1">How often the bot should check for new tweets (minimum 60 seconds)</p>
+                    </div>
+                </div>
+
+                <div>
+                    <button type="submit" 
+                        class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Start Reposting
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <footer class="mt-8 text-center text-gray-500 text-sm">
+            <p>Twitter Repost Bot &copy; 2023 - For educational purposes only</p>
+            <p class="mt-1">Please ensure you comply with Twitter's Terms of Service</p>
+        </footer>
+    </div>
+</body>
+</html> 
