@@ -47,13 +47,14 @@ def get_driver():
     return driver
 
 class TwitterBot:
-    def __init__(self, username, password):
+    def __init__(self, username, password, phone_number):
         """
         Initializes a TwitterBot instance.
         
         Args:
             username (str): Twitter username.
             password (str): Twitter password.
+            phone_number (str): Phone number for two-factor authentication if required.
         
         Attributes:
             driver (webdriver.Chrome): Selenium WebDriver instance.
@@ -63,6 +64,7 @@ class TwitterBot:
         """
         self.username = username
         self.password = password
+        self.phone_number = phone_number
         self.driver = None
         self.results = []
         self.monitoring = False
@@ -76,9 +78,21 @@ class TwitterBot:
             logger.error("Error setting up driver: " + str(e))
             messagebox.showerror("Driver Error", str(e))
 
-    def perform_login(self, phone=None):
+    def is_tweet_pinned(self, tweet_element):
+        """
+        Checks if a tweet is pinned by searching for a pinned indicator.
+        (Assumes the tweet element contains a span with text 'Pinned' if it is pinned.)
+        """
         try:
-            login(self.driver, self.username, self.password, phone)
+            pinned_elements = tweet_element.find_elements(By.XPATH, ".//span[contains(text(), 'Pinned')]")
+            return len(pinned_elements) > 0
+        except Exception as e:
+            logger.warning("Error checking if tweet is pinned: " + str(e))
+            return False
+
+    def perform_login(self, phone):
+        try:
+            login(self.driver, self.username, self.password, self.phone_number)
             logger.info("Login successful")
             return True
         except Exception as e:
@@ -121,7 +135,8 @@ class TwitterBot:
 
     def get_latest_tweets(self, user_id, count=3):
         """
-        Retrieves the top 'count' tweets from a user's Twitter profile using the accessible list.
+        Retrieves the top 'count' tweets from a user's Twitter profile using the accessible list,
+        excluding pinned tweets.
         
         Args:
             user_id (str): Twitter handle of the user.
@@ -139,7 +154,9 @@ class TwitterBot:
             time.sleep(3)
             container = self.driver.find_element(By.CSS_SELECTOR, '[aria-labelledby^="accessible-list-"]')
             tweets = container.find_elements(By.CSS_SELECTOR, 'article[data-testid="tweet"]')
-            logger.info(f"Found {len(tweets)} tweets in accessible list for user {user_id}")
+            # Filter out pinned tweets
+            tweets = [tweet for tweet in tweets if not self.is_tweet_pinned(tweet)]
+            logger.info(f"Found {len(tweets)} non-pinned tweets in accessible list for user {user_id}")
             latest_tweets = []
             for tweet in tweets[:count]:
                 raw_id = tweet.get_attribute("aria-labelledby")
@@ -186,13 +203,14 @@ class TwitterBot:
     def get_logged_tweet_ids(self, user_id):
         """
         Reads the posted_tweet_ids.txt file and returns a set of tweet IDs for the given user.
+        (In our updated design, we store only one tweet id per user.)
         """
         logged_ids = set()
         try:
             if os.path.exists("posted_tweet_ids.txt"):
                 with open("posted_tweet_ids.txt", "r", encoding="utf-8") as f:
                     for line in f:
-                        parts = line.strip().split(":")
+                        parts = line.strip().split(":", 1)
                         if len(parts) == 2:
                             uid = parts[0].strip()
                             tweet_id = parts[1].strip()
@@ -202,35 +220,42 @@ class TwitterBot:
             logger.error(f"Error reading logged tweet ids for {user_id}: {str(e)}")
         return logged_ids
 
-    def log_retweeted_tweet(self, user_id, tweet_url):
+    def update_logged_tweet_id(self, user_id, tweet_url):
         """
-        Extracts the tweet ID from the tweet URL and appends it to a file along with the username.
+        Updates the posted_tweet_ids.txt file so that for the given user, only the tweet id extracted from tweet_url is saved.
         """
         try:
             tweet_id = tweet_url.split('/status/')[-1].split('?')[0]
-            log_line = f"{user_id}: {tweet_id}\n"
-            with open("posted_tweet_ids.txt", "a", encoding="utf-8") as f:
-                f.write(log_line)
-            logger.info(f"Logged retweeted tweet ID for {user_id}: {tweet_id}")
+            existing = {}
+            if os.path.exists("posted_tweet_ids.txt"):
+                with open("posted_tweet_ids.txt", "r", encoding="utf-8") as f:
+                    for line in f:
+                        parts = line.strip().split(":", 1)
+                        if len(parts) == 2:
+                            existing[parts[0].strip()] = parts[1].strip()
+            existing[user_id] = tweet_id
+            with open("posted_tweet_ids.txt", "w", encoding="utf-8") as f:
+                for uid, tid in existing.items():
+                    f.write(f"{uid}: {tid}\n")
+            logger.info(f"Updated logged tweet id for {user_id}: {tweet_id}")
         except Exception as e:
-            logger.error(f"Error logging retweeted tweet ID for {user_id}: {str(e)}")
+            logger.error(f"Error updating logged tweet id for {user_id}: {str(e)}")
 
     def repost_with_hashtag(self, tweet_element, hashtags):
         """
         Reposts (quote tweets) a given tweet with the provided hashtag(s) as the entire comment.
         This function uses the Quote Tweet option to repost the tweet and then immediately sets the
         tweet input field to the hashtag text via JavaScript before clicking the tweet button.
-
+        
         Args:
             tweet_element (WebElement): Selenium element representing the tweet.
             hashtags (list): List of hashtag strings to be used in the repost.
-
+        
         Returns:
             bool: True if reposting was successful; False otherwise.
         """
         try:
             logger.info("Starting repost process with hashtag")
-            # Open the tweet detail page using a link from the tweet element
             clickable_elements = tweet_element.find_elements(By.TAG_NAME, 'a')
             for element in clickable_elements:
                 try:
@@ -245,7 +270,6 @@ class TwitterBot:
                     logger.warning(f"Error checking link: {str(e)}")
                     continue
 
-            # Click the retweet button
             retweet_button = None
             retweet_selectors = [
                 '[data-testid="retweet"]',
@@ -277,16 +301,20 @@ class TwitterBot:
                 retweet_button.click()
                 logger.info("Clicked retweet button")
             except Exception as e:
-                logger.error(f"Error clicking retweet button: {str(e)}")
-                try:
-                    self.driver.execute_script("arguments[0].click();", retweet_button)
-                    logger.info("Clicked retweet button using JavaScript")
-                except Exception as js_e:
-                    logger.error(f"JavaScript click also failed: {str(js_e)}")
+                error_str = str(e)
+                if "element click intercepted" in error_str:
+                    logger.error("Tweet button click intercepted; moving on to next tweet.")
                     return False
+                else:
+                    logger.error(f"Error clicking retweet button: {error_str}")
+                    try:
+                        self.driver.execute_script("arguments[0].click();", retweet_button)
+                        logger.info("Clicked retweet button using JavaScript")
+                    except Exception as js_e:
+                        logger.error(f"JavaScript click for tweet button failed: {str(js_e)}")
+                        return False
 
             time.sleep(2)
-            # Click the "Quote Tweet" option to enable reposting with comment
             quote_option = None
             quote_selectors = [
                 "//span[text()='Quote']",
@@ -328,7 +356,6 @@ class TwitterBot:
                     return False
 
             time.sleep(2)
-            # Set the tweet input field to the hashtag text using JavaScript (avoiding send_keys issues)
             hashtag_text = " ".join(hashtags)
             tweet_input = None
             tweet_input_selectors = [
@@ -358,7 +385,6 @@ class TwitterBot:
                 logger.error("Could not find tweet input field")
                 return False
 
-            # Use JavaScript to set the tweet input's content to only the hashtag text
             try:
                 script = "arguments[0].innerHTML = arguments[1];"
                 self.driver.execute_script(script, tweet_input, hashtag_text)
@@ -368,7 +394,6 @@ class TwitterBot:
                 return False
 
             time.sleep(1)
-            # Locate and click the tweet button to finalize the repost
             tweet_button = None
             tweet_button_selectors = [
                 '[data-testid="tweetButton"]',
@@ -418,32 +443,41 @@ class TwitterBot:
     def check_for_new_tweet(self, user_id, hashtag):
         """
         Checks the user's tweets in descending order (most recent first). For each tweet, if the tweet ID is not
-        in the logged tweet IDs (loaded from file), it retweets the tweet, logs it, and continues until a tweet is
-        encountered that is already processed. This way every new tweet is retweeted and the latest tweet becomes
-        the new reference.
+        equal to the saved tweet ID for that user (loaded from file), it retweets the tweet and logs it.
+        The process stops once a tweet is encountered that is already processed.
+        Finally, it updates the saved tweet id to only the top (most recent) tweet id, ignoring pinned tweets.
         
         Returns:
             tuple(bool, str): True and a message if at least one new tweet was retweeted; otherwise False.
         """
         try:
+            new_top_tweet_id = None
             # Navigate to the user's profile
             if not self.navigate_to_user_profile(user_id):
                 return False, f"Could not navigate to {user_id}'s profile."
-            
-            # Wait until tweet elements are loaded using a robust CSS selector
+            time.sleep(3)
+
             wait = WebDriverWait(self.driver, 20)
             tweet_elements = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, "article[data-testid='tweet']")))
             
-            if not tweet_elements:
-                logger.info(f"No tweets found for {user_id} in check_for_new_tweet")
+            # Filter out pinned tweets
+            non_pinned_tweets = [tweet for tweet in tweet_elements if not self.is_tweet_pinned(tweet)]
+            
+            if not non_pinned_tweets:
+                logger.info(f"No non-pinned tweets found for {user_id} in check_for_new_tweet")
                 return False, "No tweets found"
-            logged_ids = self.get_logged_tweet_ids(user_id)
-
-            # Extract tweet URLs from these tweet elements
+            
+            # Get the top tweet's URL and id (most recent non-pinned tweet)
+            try:
+                top_link = non_pinned_tweets[0].find_element(By.XPATH, './/a[contains(@href, "/status/")]')
+                top_tweet_url = top_link.get_attribute("href")
+            except Exception as e:
+                logger.error(f"Error extracting top tweet URL for {user_id}: {str(e)}")
+                return False, "Error extracting tweet URL"
+            
             tweet_urls = []
-            for tweet in tweet_elements:
+            for tweet in non_pinned_tweets:
                 try:
-                    # Look for an anchor element whose href contains "/status/"
                     link_element = tweet.find_element(By.XPATH, './/a[contains(@href, "/status/")]')
                     tweet_url = link_element.get_attribute("href")
                     tweet_urls.append(tweet_url)
@@ -452,53 +486,41 @@ class TwitterBot:
             if not tweet_urls:
                 return False, f"No tweet URLs found for {user_id}"
             
-            
             new_tweets_retweeted = 0
-
-            # Iterate over tweets (assumed to be in descending order: most recent first)
+            # Iterate through tweet URLs for non-pinned tweets
             for tweet in tweet_urls:
                 try:
-                    # get tweet id of top post
-                    tweet_id = tweet.split("/status/")[-1].split('?')[0]
+                    top_tweet_id = tweet.split("/status/")[-1].split('?')[0]
+                    saved_ids = self.get_logged_tweet_ids(user_id)
+                    saved_tweet_id = next(iter(saved_ids), None)
 
-                    # If tweet id is present and the post is not pinned
-                    if tweet_id in logged_ids:
-                        logger.info(f"Encountered processed tweet for {user_id}: {tweet_id}. Stopping new tweet checks.")
+                    if saved_tweet_id == top_tweet_id:
+                        logger.info(f"No new tweet for {user_id}: top tweet id {top_tweet_id} already processed")
                         break
-                    else:
-                        logger.info(f"New tweet detected for {user_id}: {tweet}")
                     
-                    # Navigate to the tweet's detail page
                     self.driver.get(tweet)
-
-                    # Wait for the tweet detail element to be present
                     tweet_detail = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "article[data-testid='tweet']")))
-
-                    # Retweet the tweet with comment using the provided hashtag
                     retweeted = self.repost_with_hashtag(tweet_detail, [hashtag])
                     
-                    # link_element = tweet.find_element(By.XPATH, './/a[contains(@href, "/status/")]')
-                    # tweet_url = link_element.get_attribute("href")
-
-                    if retweeted:
-                        logger.info(f"Successfully retweeted new tweet for {user_id}: {tweet_id}")
-                        new_tweets_retweeted += 1
+                    if retweeted and new_tweets_retweeted == 0:
+                        logger.info(f"Successfully retweeted new tweet for {user_id}: {top_tweet_id} as top ID")
                         if user_id not in self.processed_tweets_map:
                             self.processed_tweets_map[user_id] = set()
-                        self.processed_tweets_map[user_id].add(tweet_id)
-                        self.log_retweeted_tweet(user_id, tweet_url)
-                    else:
-                        logger.warning(f"Failed to retweet new tweet for {user_id}: {tweet_id}")
-                
+                        else:
+                            self.processed_tweets_map[user_id].clear()
+                        self.processed_tweets_map[user_id].add(top_tweet_id)
+                        new_top_tweet_id = tweet
+                        new_tweets_retweeted += 1
+                    elif retweeted:
+                        new_tweets_retweeted += 1
+                        logger.info(f"Successfully retweeted new tweet for {user_id}: {top_tweet_id}")
                 except Exception as e:
-                    logger.error(f"Error extracting tweet URL for {user_id}: {str(e)}")
+                    logger.error(f"Error processing tweet for {user_id}: {str(e)}")
                     continue
-                
-                # self.driver.get(tweet_url)
-                # time.sleep(3)
-                # tweet_detail = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "article[data-testid='tweet']")))
-                
+
             if new_tweets_retweeted > 0:
+                logger.info(f"Tweet id updated for {user_id}")
+                self.update_logged_tweet_id(user_id, new_top_tweet_id)
                 return True, f"Retweeted {new_tweets_retweeted} new tweet(s) for {user_id}."
             else:
                 return False, f"No new tweets to retweet for {user_id}."
@@ -511,71 +533,67 @@ class TwitterBot:
         Processes a single Twitter user by navigating to the user's profile, extracting the top 3 tweet elements,
         and retweeting only those tweets that have not been processed before. It does so by checking the saved
         tweet IDs from file (via get_logged_tweet_ids). When a new tweet is retweeted, its tweet ID is logged.
+        Only the top tweet id (the most recent tweet) is kept in the file.
         
         Returns:
             tuple(bool, str): A success flag and a message.
         """
         try:
-            # Navigate to the user's profile
             if not self.navigate_to_user_profile(user_id):
                 return False, f"Could not navigate to {user_id}'s profile."
-            
-            # Wait until tweet elements are loaded using a robust CSS selector
+            time.sleep(3)
+
             wait = WebDriverWait(self.driver, 20)
             tweets = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, "article[data-testid='tweet']")))
             
-            # Get the top 3 tweet elements
-            tweet_elements = tweets[:3]
+            # Filter out pinned tweets
+            tweet_elements = [tweet for tweet in tweets if not self.is_tweet_pinned(tweet)]
             if not tweet_elements:
-                logger.warning(f"No tweets found for {user_id}")
+                logger.warning(f"No non-pinned tweets found for {user_id}")
                 return False, f"No tweets found for {user_id}"
             
-            # Extract tweet URLs from these tweet elements
+            logged_ids = self.get_logged_tweet_ids(user_id)
+            successful_retweets = 0
+
             tweet_urls = []
             for tweet in tweet_elements:
                 try:
-                    # Look for an anchor element whose href contains "/status/"
                     link_element = tweet.find_element(By.XPATH, './/a[contains(@href, "/status/")]')
                     tweet_url = link_element.get_attribute("href")
                     tweet_urls.append(tweet_url)
                 except Exception as e:
                     logger.error(f"Error extracting tweet URL for {user_id}: {str(e)}")
-            
+        
             if not tweet_urls:
                 return False, f"No tweet URLs found for {user_id}"
             
-            successful_retweets = 0
-            
-            
-            # Process each tweet URL separately
             for i, tweet_url in enumerate(tweet_urls):
                 try:
+                    tweet_id = tweet_url.split("/status/")[-1].split('?')[0]
+                    if tweet_id in logged_ids:
+                        logger.info(f"Tweet {tweet_id} for {user_id} already processed, skipping.")
+                        continue
+
                     logger.info(f"Processing tweet {i+1} for {user_id}: {tweet_url}")
-                    
-                    # Navigate to the tweet's detail page
                     self.driver.get(tweet_url)
-                    # Wait for the tweet detail element to be present
+                    time.sleep(3)
                     tweet_detail = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "article[data-testid='tweet']")))
-                    
-                    # Retweet with comment using the provided hashtag
                     retweeted = self.repost_with_hashtag(tweet_detail, [hashtag])
+
                     if retweeted:
-                        logger.info(f"Successfully retweeted tweet {i+1} for {user_id}")
+                        logger.info(f"Successfully retweeted tweet for {user_id}: {tweet_id}")
                         successful_retweets += 1
-                        self.log_retweeted_tweet(user_id, tweet_url)  # Log the tweet ID from the URL
-                    
                     else:
-                        logger.warning(f"Failed to retweet tweet {i+1} for {user_id}")
-                    
-                    # Navigate back to the user's profile to reset state
+                        logger.warning(f"Failed to retweet tweet for {user_id}: {tweet_id}")
                     self.driver.get(f"https://twitter.com/{user_id}")
                     time.sleep(5)
                 except Exception as e:
-                    logger.error(f"Error processing tweet {i+1} for {user_id}: {str(e)}")
-            
-            if successful_retweets == 0:
+                    logger.error(f"Error processing a tweet for {user_id}: {str(e)}")
+            if successful_retweets > 0:
+                self.update_logged_tweet_id(user_id, tweet_urls[0])
+                return True, f"Successfully retweeted {successful_retweets} tweets for {user_id}."
+            else:
                 return False, f"No new tweets retweeted for {user_id}"
-            return True, f"Successfully retweeted {successful_retweets} tweets for {user_id}."
         except Exception as e:
             logger.error(f"Error processing user {user_id}: {str(e)}")
             return False, f"Error processing user {user_id}: {str(e)}"

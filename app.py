@@ -1,7 +1,7 @@
 import os
 from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
 from werkzeug.utils import secure_filename
-from twitter_bot import TwitterBot
+from twitter_bot1 import TwitterBot
 import chromedriver_autoinstaller
 
 app = Flask(__name__)
@@ -65,27 +65,38 @@ def upload_file():
         flash('File type not allowed. Please upload a .txt file.')
         return redirect(request.url)
 
+
 @app.route('/start_bot')
 def start_bot():
+    # Check if all required information is available
     global twitter_bot
     user_ids_file = session.get('user_ids_file')
     twitter_username = session.get('twitter_username')
     twitter_password = session.get('twitter_password')
+    phone_number = session.get('phone_number')
     hashtags = session.get('hashtags')
     enable_monitoring = session.get('enable_monitoring', False)
     monitor_interval = session.get('monitor_interval', 300)
     
+    # Clear session data
     if not all([user_ids_file, twitter_username, twitter_password, hashtags]):
         flash('Missing required information')
         return redirect(url_for('index'))
     
+    # Load user IDs and hashtags
     user_ids = load_accounts_list(user_ids_file)
     hashtag_list = [tag.strip() for tag in hashtags.split(',') if tag.strip()]
     
+    # Start bot
     try:
+        # Stop monitoring if already active
         if twitter_bot and twitter_bot.monitoring:
             twitter_bot.stop_monitoring()
-        twitter_bot = TwitterBot(twitter_username, twitter_password)
+        
+        # Start bot
+        twitter_bot = TwitterBot(twitter_username, twitter_password, phone_number)
+
+        # Repost tweets
         results = twitter_bot.repost_tweets(
             user_ids, 
             hashtag_list, 

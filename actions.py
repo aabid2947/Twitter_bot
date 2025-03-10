@@ -54,13 +54,17 @@ def login(driver, username, password, phone):
         
         # Wait for the page to load
         time.sleep(10)
+        try:
         
-        # Locate the username input field and enter username
-        username_input = driver.find_element(By.TAG_NAME, 'input')  # The only available input field
-        username_input.send_keys(username)
-        
-        # Press 'Next' to go to the password field
-        username_input.send_keys(Keys.ENTER)
+            # Locate the username input field and enter username
+            username_input = driver.find_element(By.TAG_NAME, 'input')  # The only available input field
+            username_input.send_keys(username)
+            
+            # Press 'Next' to go to the password field
+            username_input.send_keys(Keys.ENTER)
+        except Exception as e:
+            print(f"Error during login: {str(e)}")
+            return False
         
         # Wait for the password field to load
         time.sleep(5)
@@ -75,23 +79,30 @@ def login(driver, username, password, phone):
             
             # Wait for login to complete
             time.sleep(5)
-        except:
-            # Locate the username input field and enter username
-            phone_input = driver.find_element(By.TAG_NAME, 'input')  # The only available input field
-            phone_input.send_keys(phone)
-            
-            # Press 'Next' to go to the password field
-            phone_input.send_keys(Keys.ENTER)
-            
-            # Wait for the password field to load
-            time.sleep(5)
+        except Exception as e:
+            print(f"Error during login: {str(e)}")
+            try:
+                     # Locate the username input field and enter username
+                phone_input = driver.find_element(By.TAG_NAME, 'input')  # The only available input field
+                phone_input.send_keys(phone)
+                
+                # Press 'Next' to go to the password field
+                phone_input.send_keys(Keys.ENTER)
+                
+                # Wait for the password field to load
+                time.sleep(5)
 
-            # Locate the password input field and enter password
-            password_input = driver.find_element(By.NAME, 'password')
-            password_input.send_keys(password)
+                # Locate the password input field and enter password
+                password_input = driver.find_element(By.NAME, 'password')
+                password_input.send_keys(password)
+                
+                # Press 'Enter' to log in
+                password_input.send_keys(Keys.ENTER)
+            except Exception as e:
+                return False
             
-            # Press 'Enter' to log in
-            password_input.send_keys(Keys.ENTER)
+        # except:
+       
             
             # Wait for login to complete
             time.sleep(5)

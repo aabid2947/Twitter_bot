@@ -47,7 +47,7 @@ def get_driver():
     return driver
 
 class TwitterBot:
-    def __init__(self, username, password):
+    def __init__(self, username, password,phone_number):
         """
         Initializes a TwitterBot instance.
         
@@ -63,6 +63,7 @@ class TwitterBot:
         """
         self.username = username
         self.password = password
+        self.phone_number = phone_number
         self.driver = None
         self.results = []
         self.monitoring = False
@@ -76,11 +77,18 @@ class TwitterBot:
             logger.error("Error setting up driver: " + str(e))
             messagebox.showerror("Driver Error", str(e))
 
-    def perform_login(self, phone=None):
+    def perform_login(self,phone):
         try:
-            login(self.driver, self.username, self.password, phone)
-            logger.info("Login successful")
-            return True
+            login_succes=None
+
+            login_success = login(self.driver, self.username, self.password, self.phone_number)
+            logger.info(login_succes)
+            if login_succes:
+
+                logger.info("Login successful")
+                return True
+            else:
+                self.perform_login()
         except Exception as e:
             logger.error("Login failed: " + str(e))
             messagebox.showerror("Login Error", f"Login failed: {str(e)}")
