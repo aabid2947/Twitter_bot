@@ -1,7 +1,9 @@
 import os
+import uuid
+import threading
 from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
 from werkzeug.utils import secure_filename
-from twitter_bot1 import TwitterBot
+from twitter_bot import TwitterBot
 import chromedriver_autoinstaller
 
 app = Flask(__name__)
@@ -16,8 +18,8 @@ os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 # Install ChromeDriver
 chromedriver_autoinstaller.install()
 
-# Global bot instance for monitoring
-twitter_bot = None
+# Global dictionary to hold multiple TwitterBot instances
+twitter_bots = {}
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
@@ -33,112 +35,123 @@ def load_accounts_list(file_path):
 
 @app.route('/')
 def index():
-    monitoring_active = twitter_bot is not None and twitter_bot.monitoring
-    return render_template('index.html', monitoring_active=monitoring_active)
+    # Build a list of active bots for display
+    active_bots = [
+        {"bot_id": bot.bot_id, "username": bot.username, "monitored_users": bot.user_ids}
+        for bot in twitter_bots.values()
+        if getattr(bot, "monitoring", False)
+    ]
+    monitoring_active = len(active_bots) > 0
+    return render_template('index.html', monitoring_active=monitoring_active, active_bots=active_bots)
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
     if 'file' not in request.files:
         flash('No file part')
-        return redirect(request.url)
+        return redirect(url_for('index'))
     file = request.files['file']
     if file.filename == '':
         flash('No selected file')
-        return redirect(request.url)
+        return redirect(url_for('index'))
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(filepath)
         session['user_ids_file'] = filepath
+
+        # Get form values
         twitter_username = request.form.get('twitter_username')
         twitter_password = request.form.get('twitter_password')
+        phone_number = request.form.get('phone_number')
         hashtags = request.form.get('hashtags')
-        enable_monitoring = request.form.get('enable_monitoring') == 'on'
-        monitor_interval = int(request.form.get('monitor_interval', 300))
+        # Optionally, add monitoring settings from form (if available)
+        # enable_monitoring = request.form.get('enable_monitoring') == 'on'
+        # monitor_interval = int(request.form.get('monitor_interval', 300))
+        
         session['twitter_username'] = twitter_username
         session['twitter_password'] = twitter_password
+        session['phone_number'] = phone_number
         session['hashtags'] = hashtags
-        session['enable_monitoring'] = enable_monitoring
-        session['monitor_interval'] = monitor_interval
-        return redirect(url_for('start_bot'))
+        # session['enable_monitoring'] = enable_monitoring
+        # session['monitor_interval'] = monitor_interval
+
+        # Use monitoring enabled by default
+        enable_monitoring = session.get('enable_monitoring', True)
+        monitor_interval = session.get('monitor_interval', 300)
+        
+        # Verify required info
+        if not all([session.get('user_ids_file'), twitter_username, twitter_password, hashtags]):
+            flash('Missing required information')
+            return redirect(url_for('index'))
+        
+        # Load user IDs and hashtags from the uploaded file and form input
+        user_ids = load_accounts_list(filepath)
+        hashtag_list = [tag.strip() for tag in hashtags.split(',') if tag.strip()]
+        
+        try:
+            # Create a new bot instance and assign the username for display
+            new_bot = TwitterBot(twitter_username, twitter_password, phone_number)
+            new_bot.username = twitter_username
+            new_bot.user_ids = user_ids
+            new_bot.hashtags = hashtag_list
+            new_bot.results = []  # Ensure results attribute exists
+            
+            # Assign a unique ID to the bot
+            new_bot.bot_id = str(uuid.uuid4())
+            
+            if enable_monitoring:
+                # Start repost_tweets in a background thread with monitoring enabled.
+                thread = threading.Thread(
+                    target=new_bot.repost_tweets,
+                    args=(user_ids, hashtag_list, True, monitor_interval, phone_number)
+                )
+                thread.daemon = True  # Ensure thread exits when the main process does.
+                thread.start()
+                twitter_bots[new_bot.bot_id] = new_bot
+                flash(f"Bot started successfully with monitoring enabled. Bot ID: {new_bot.bot_id}")
+            else:
+                # If monitoring is disabled, run synchronously.
+                results = new_bot.repost_tweets(user_ids, hashtag_list)
+                flash("Bot started successfully.")
+                twitter_bots[new_bot.bot_id] = new_bot
+        except Exception as e:
+            flash(f'Error: {str(e)}')
+        
+        # Build a list of all active bots for display
+        active_bots = [
+            {"bot_id": bot.bot_id, "username": bot.username, "monitored_users": bot.user_ids}
+            for bot in twitter_bots.values() if getattr(bot, "monitoring", False)
+        ]
+        return render_template('index.html', monitoring_active=True, active_bots=active_bots)
     else:
         flash('File type not allowed. Please upload a .txt file.')
-        return redirect(request.url)
-
-
-@app.route('/start_bot')
-def start_bot():
-    # Check if all required information is available
-    global twitter_bot
-    user_ids_file = session.get('user_ids_file')
-    twitter_username = session.get('twitter_username')
-    twitter_password = session.get('twitter_password')
-    phone_number = session.get('phone_number')
-    hashtags = session.get('hashtags')
-    enable_monitoring = session.get('enable_monitoring', False)
-    monitor_interval = session.get('monitor_interval', 300)
-    
-    # Clear session data
-    if not all([user_ids_file, twitter_username, twitter_password, hashtags]):
-        flash('Missing required information')
-        return redirect(url_for('index'))
-    
-    # Load user IDs and hashtags
-    user_ids = load_accounts_list(user_ids_file)
-    hashtag_list = [tag.strip() for tag in hashtags.split(',') if tag.strip()]
-    
-    # Start bot
-    try:
-        # Stop monitoring if already active
-        if twitter_bot and twitter_bot.monitoring:
-            twitter_bot.stop_monitoring()
-        
-        # Start bot
-        twitter_bot = TwitterBot(twitter_username, twitter_password, phone_number)
-
-        # Repost tweets
-        results = twitter_bot.repost_tweets(
-            user_ids, 
-            hashtag_list, 
-            start_monitoring=enable_monitoring,
-            monitor_interval=monitor_interval
-        )
-        
-        if enable_monitoring:
-            flash('Bot started in monitoring mode. It will continue to run in the background.')
-        return render_template('results.html', results=results, monitoring_active=enable_monitoring)
-    except Exception as e:
-        flash(f'Error: {str(e)}')
         return redirect(url_for('index'))
 
 @app.route('/stop_monitoring')
 def stop_monitoring():
-    global twitter_bot
-    if twitter_bot and twitter_bot.monitoring:
-        twitter_bot.stop_monitoring()
-        flash('Monitoring stopped successfully')
+    bot_id = request.args.get('bot_id')
+    if bot_id and bot_id in twitter_bots:
+        bot = twitter_bots[bot_id]
+        if getattr(bot, "monitoring", False):
+            bot.stop_monitoring()
+            flash(f'Monitoring stopped for bot {bot_id}')
+        else:
+            flash(f'Bot {bot_id} is not currently monitoring')
     else:
-        flash('No active monitoring to stop')
+        flash('No valid bot ID provided')
     return redirect(url_for('index'))
 
 @app.route('/status')
 def status():
-    global twitter_bot
-    if twitter_bot:
-        monitoring_active = twitter_bot.monitoring
-        result_count = len(twitter_bot.results)
-        latest_results = twitter_bot.results[-10:] if twitter_bot.results else []
-        return jsonify({
-            'monitoring_active': monitoring_active,
-            'result_count': result_count,
-            'latest_results': latest_results
+    statuses = []
+    for bot in twitter_bots.values():
+        statuses.append({
+            'bot_id': bot.bot_id,
+            'monitoring_active': bot.monitoring,
+            'result_count': len(bot.results) if hasattr(bot, 'results') else 0,
+            'latest_results': bot.results[-10:] if hasattr(bot, 'results') and bot.results else []
         })
-    else:
-        return jsonify({
-            'monitoring_active': False,
-            'result_count': 0,
-            'latest_results': []
-        })
+    return jsonify(statuses)
 
 @app.route('/status_page')
 def status_page():
@@ -146,10 +159,9 @@ def status_page():
 
 @app.route('/logout')
 def logout_route():
-    global twitter_bot
-    if twitter_bot and twitter_bot.monitoring:
-        twitter_bot.stop_monitoring()
+    # Do not stop bots on logout; they will continue running.
     session.clear()
+    flash("Logged out, but bots will continue running.")
     return redirect(url_for('index'))
 
 if __name__ == '__main__':

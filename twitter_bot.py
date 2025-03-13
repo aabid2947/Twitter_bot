@@ -66,7 +66,7 @@ class TwitterBot:
         self.phone_number = phone_number
         self.driver = None
         self.results = []
-        self.monitoring = False
+        self.monitoring = True
         self.processed_tweets_map = {}  # e.g., { "ElonMusk": {"12345", "67890"}, ... }
         self.setup_driver()
 
@@ -79,16 +79,16 @@ class TwitterBot:
 
     def perform_login(self,phone):
         try:
-            login_succes=None
+            logger.info('here')
+            logger.info(self.phone_number)
+            login(self.driver, self.username, self.password, self.phone_number)
+            
+            # if login_succes:
 
-            login_success = login(self.driver, self.username, self.password, self.phone_number)
-            logger.info(login_succes)
-            if login_succes:
-
-                logger.info("Login successful")
-                return True
-            else:
-                self.perform_login()
+            logger.info("Login successful")
+            return True
+            # else:
+            #     self.perform_login()
         except Exception as e:
             logger.error("Login failed: " + str(e))
             messagebox.showerror("Login Error", f"Login failed: {str(e)}")
@@ -231,6 +231,91 @@ class TwitterBot:
             logger.info(f"Updated logged tweet id for {user_id}: {tweet_id}")
         except Exception as e:
             logger.error(f"Error updating logged tweet id for {user_id}: {str(e)}")
+    
+    def find_tweet(self,driver, tweet_url):
+        """
+        Finds a tweet specified by URL.
+
+        Args:
+        - driver: Selenium WebDriver instance.
+        - tweet_url: URL of the tweet to like.
+
+        Returns:
+        - Required tweet from the page if no error encountered else None.
+        """
+        try:
+            driver.get(tweet_url)
+            time.sleep(5)  # Let the page load
+            # Find all the tweets (article elements) on the page
+            tweets = driver.find_elements(By.CSS_SELECTOR, "article[data-testid='tweet']")
+            for tweet in tweets:
+                a_tags = tweet.find_elements(By.TAG_NAME, "a")
+                for a_tag in a_tags:
+                    tweet_link = a_tag.get_attribute("href")
+                    if tweet_link == tweet_url:
+                        return tweet
+        except Exception as e:
+            print(f"Error while finding tweet: {str(e)}")
+            return None
+
+    def quote_tweet(self, driver, tweet_url, quote_text, folder_path=None, image_index=None):
+        """
+        Quotes a tweet specified by URL.
+
+        Args:
+        - driver: Selenium WebDriver instance.
+        - tweet_url: URL of the tweet to quote.
+        - quote_text: text to tweet.
+
+        Returns:
+        - True if quote successful, False otherwise.
+        """
+        try:        
+            tweet = self.find_tweet(driver, tweet_url)
+
+            repost_button = tweet.find_element(By.CSS_SELECTOR, '[data-testid="retweet"]')
+            repost_button.click()
+            time.sleep(1)
+
+            confirm_repost = driver.find_element(By.CSS_SELECTOR, 'a[href="/compose/post"]')
+            confirm_repost.click()
+            time.sleep(2)
+
+            # Click on the Tweet button to open the tweet modal
+            tweet_box = driver.find_element(By.CSS_SELECTOR, 'div[aria-label="Post text"]')
+            tweet_box.click()
+            time.sleep(1)
+
+            # Type the tweet message
+            tweet_box.send_keys(quote_text+' ') #adding space to avoid hashtag window
+
+
+            # Check if folder_path is provided, and add a random image if it is
+            # if folder_path and os.path.exists(folder_path):
+            #     images = [f for f in os.listdir(folder_path) if f.lower().endswith(('png', 'jpg', 'jpeg', 'gif'))]
+            #     if images:
+            #         # random_image = os.path.join(folder_path, random.choice(images))
+            #         image = get_image(folder_path=folder_path, image_index=image_index)
+            #         # Find the file input element for image upload and send the file path
+            #         file_input = driver.find_element(By.XPATH, '//input[@type="file"]')
+            #         file_input.send_keys(image)
+                    
+            #         # Allow some time for the image to be processed by Twitter
+            #         time.sleep(3)
+
+            # Post the tweet
+            tweet_button = driver.find_element(By.XPATH, '//button[@data-testid="tweetButton"]')
+            tweet_button.click()
+
+            # Allow time for the tweet to post
+            time.sleep(5)
+
+
+            return True
+
+        except Exception as e:
+            print(f"Error while quoting tweet: {str(e)}")
+            return False
 
     def repost_with_hashtag(self, tweet_element, hashtags):
         """
@@ -496,11 +581,13 @@ class TwitterBot:
                     # Navigate to the tweet's detail page
                     self.driver.get(tweet)
 
-                    # Wait for the tweet detail element to be present
-                    tweet_detail = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "article[data-testid='tweet']")))
+                    # # Wait for the tweet detail element to be present
+                    # tweet_detail = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "article[data-testid='tweet']")))
 
-                    # Retweet the tweet with comment using the provided hashtag
-                    retweeted = self.repost_with_hashtag(tweet_detail, [hashtag])
+                    # # Retweet the tweet with comment using the provided hashtag
+                    # retweeted = self.repost_with_hashtag(tweet_detail, [hashtag])
+
+                    retweeted = self.quote_tweet(driver=self.driver,tweet_url=tweet,quote_text=" ".join(hashtag))
 
                     logger.info(f"new retweet count  {new_tweets_retweeted}")
 
@@ -599,8 +686,10 @@ class TwitterBot:
                     logger.info(f"Processing tweet {i+1} for {user_id}: {tweet_url}")
                     self.driver.get(tweet_url)
                     time.sleep(3)
-                    tweet_detail = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "article[data-testid='tweet']")))
-                    retweeted = self.repost_with_hashtag(tweet_detail, [hashtag])
+
+                    # tweet_detail = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "article[data-testid='tweet']")))
+                    # retweeted = self.repost_with_hashtag(tweet_detail, [hashtag])
+                    retweeted = self.quote_tweet(driver=self.driver,tweet_url=tweet_url,quote_text=" ".join(hashtag))
 
                     if retweeted:
                         logger.info(f"Successfully retweeted tweet for {user_id}: {tweet_id}")
@@ -646,27 +735,19 @@ class TwitterBot:
             except Exception as e:
                 logger.error(f"Error processing user {user_id}: {str(e)}")
                 results.append({"user": user_id, "status": "error", "message": str(e)})
-        try:
-            logout(self.driver)
-        except Exception as e:
-            logger.error(f"Error during logout: {str(e)}")
+        
         
         # Monitoring phase
         if start_monitoring:
             self.monitoring = True
             logger.info("Starting monitoring mode...")
             while self.monitoring:
-                time.sleep(monitor_interval)
-                if not self.perform_login(phone):
-                    logger.error("Monitoring: Failed to log in")
-                    continue
+                time.sleep(1)
+                
                 for user_id in user_ids:
                     retweeted, msg = self.check_for_new_tweet(user_id, hashtag)
                     logger.info(f"Monitoring: {user_id} - {msg}")
-                try:
-                    logout(self.driver)
-                except Exception as e:
-                    logger.error(f"Error during logout in monitoring: {str(e)}")
+                
             logger.info("Monitoring mode stopped.")
         else:
             self.monitoring = False
